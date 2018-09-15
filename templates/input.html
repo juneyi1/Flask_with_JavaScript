@@ -1,0 +1,246 @@
+<!doctype html>
+<title>Muilti Shipment</title>
+<head>
+  <style>
+      body {
+        margin: 20px;
+      }
+
+      form {
+          padding-left: 50px;
+      }
+
+      table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 50%;
+          margin-top: auto;
+          margin-left: 50px;
+      }
+
+      td, th {
+          border: 1px solid #dddddd;
+          text-align: right;
+          padding: 8px;
+      }
+
+      tr:nth-child(even) {
+          background-color: #dddddd;
+      }
+
+      input[type="submit"] {
+        margin-top: 20px;
+        width: 20%;
+        height: 50%;
+        font-weight: bold;
+        font-size: 24px;
+        text-transform: uppercase;
+      }
+  </style>
+</head>
+
+<body>
+
+  <h1>Shipment Information:</h1>
+    <form method="POST" action="price">
+      <div style="margin-top:  11px; margin-bottom:  6px;">
+        <div style="float:left"> First pickup date (e.g.: YYYY-MM-dd): </div>
+        <textarea name="fpd" cols="10" rows="1" style="font-size: 15px; margin-left:5px"></textarea>
+      </div>
+
+      <div style="margin-top:  6px; margin-bottom:  6px;">
+        <div style="float:left"> Pickup zipcode (e.g.: 20001): </div>
+        <textarea name="from_zip" cols="10" rows="1" style="font-size: 15px; margin-left:5px"></textarea>
+      </div>
+
+      <div style="margin-top:  6px; margin-bottom:  11px;">
+        <div style="float:left"> Dropoff zipcode (e.g.: 60016): </div>
+        <textarea name="to_zip" cols="10" rows="1" style="font-size:15px; margin-left:5px"></textarea>
+      </div>
+
+      <!-- <div style="margin-top:  6px; margin-bottom:  11px;">
+        <div style="float:left"> Number of vehicles to ship (maximum: 9): </div>
+        <textarea name="n_cars" cols="10" rows="1" style="font-size:15px; margin-left:5px"></textarea>
+      </div> -->
+
+      <div style="margin-top:  6px; margin-bottom:  11px;">
+        <div style="float:left"> Select number of vehicles to ship: </div>
+        <select id="nCars" name="nCars" onchange="getTable()" style="font-size: 15px; margin-left:5px">
+          <option value="" disabled selected>Select number</option>
+          {% for n in range(1, 10) %}
+               <option value="{{n}}">{{n}}</option>
+          {% endfor%}
+        </select>
+      </div>
+
+      <div id="printout"></div>
+
+      {% if dict_cars  %}
+        <p> Operable: {{dict_cars['op']}} </p>
+        <p> Ship via: {{dict_cars['ship']}} </p>
+      {% else %}
+        <h1>No info found</h1>
+      {% endif %}
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+      <script charset="utf-8" type="text/javascript">
+
+      function getTable() {
+          var t = document.getElementById("shipmentTable").getElementsByTagName('tbody')[0];
+          var nCars = parseInt(document.getElementById("nCars").value); //number of cars to ship
+          var len = t.rows.length - 1; // current number of cars
+          var diff = nCars - len;
+
+          if (diff > 0) {
+            for (var j = len+1; j < nCars+1; j++) {
+                var new_row = t.rows[1].cloneNode(true);
+                new_row.cells[0].innerHTML = j;
+                var make = new_row.cells[1].getElementsByTagName('select')[0];
+                // https://stackoverflow.com/questions/9447439/change-html-name-element-using-javascript
+                // make.value = '';
+                make.id = "select_make" + j;
+                make.setAttribute("name", "make" + j);
+                var model = new_row.cells[2].getElementsByTagName('select')[0];
+                // model.value = '';
+                model.id = "select_model" + j;
+                model.setAttribute("name", "model" + j);
+                var year = new_row.cells[3].getElementsByTagName('select')[0];
+                // year.value = '';
+                year.id = "select_year" + j;
+                year.setAttribute("name", "year" + j);
+                t.appendChild(new_row);
+            }
+          } else if (diff < 0) {
+            var i = diff;
+            while (i < 0) {
+              t.deleteRow(-1);
+              i++;
+            }
+          }
+
+          // https://stackoverflow.com/questions/44646925/flask-dynamic-dependent-dropdown-list
+          // https://stackoverflow.com/questions/42886965/flask-dropdown-values-based-on-prior-selection
+
+          function updateModel(make, model) {
+              var make_val = make.val();
+              model.attr('disabled', 'disabled');
+              console.log(make_val);
+
+              if (make_val.length) {
+                  model.empty();
+                  $.getJSON('/get_models' + '/' + make_val,
+                  function(data) {
+                      console.log(data);
+                      data.forEach(function(item) {
+                          model.append(
+                              $('<option>', {
+                                  value: item,
+                                  text: item
+                              })
+                          );
+                      });
+                      model.removeAttr('disabled');
+                  });
+              }
+          }
+
+          var t = document.getElementById("shipmentTable").getElementsByTagName('tbody')[0];
+          var rows = t.getElementsByClassName("selection_row");
+
+          // document.getElementById("printout").innerHTML = rows.length
+          // console.log(rows.length);
+
+          // var text = "";
+          // rows.forEach(function(row) {
+          //   var make = '#' + row.getElementsByTagName('select')[0].id;
+          //   var model = '#' + row.getElementsByTagName('select')[1].id;
+          //   $(make).on('change', function() {
+          //       updateModel($(make), $(model));
+          //   });
+          //   // text += "<br>The row is " + make + model;
+          // });
+
+          // for (var i=0; i < rows.length; i++) {
+          //   var make = '#' + rows[i].getElementsByTagName('select')[0].id;
+          //   var model = '#' + rows[i].getElementsByTagName('select')[1].id;
+          //
+          //   text += "<br>The row number is " + make + model;
+          //   $(make).on('change', function() {
+          //       updateModel($(make), $(model));
+          //   });
+          // }
+          // document.getElementById("printout").innerHTML = text
+
+          $('#select_make1').on('change', function() {
+              updateModel($('#select_make1'), $('#select_model1'));
+          });
+          $('#select_make2').on('change', function() {
+              updateModel($('#select_make2'), $('#select_model2'));
+          });
+          $('#select_make3').on('change', function() {
+              updateModel($('#select_make3'), $('#select_model3'));
+          });
+          $('#select_make4').on('change', function() {
+              updateModel($('#select_make4'), $('#select_model4'));
+          });
+          $('#select_make5').on('change', function() {
+              updateModel($('#select_make5'), $('#select_model5'));
+          });
+          $('#select_make6').on('change', function() {
+              updateModel($('#select_make6'), $('#select_model6'));
+          });
+          $('#select_make7').on('change', function() {
+              updateModel($('#select_make7'), $('#select_model7'));
+          });
+          $('#select_make8').on('change', function() {
+              updateModel($('#select_make8'), $('#select_model8'));
+          });
+          $('#select_make9').on('change', function() {
+              updateModel($('#select_make9'), $('#select_model9'));
+          });
+      }
+      </script>
+
+      <table id="shipmentTable">
+        <tbody>
+          <tr>
+            {% for column_name in ["Vehicle", "Make", "Model", "Year"] %}
+              <th>{{column_name}}</th>
+            {% endfor %}
+          </tr>
+          {% for row in range(2) %}
+            <tr class="selection_row">
+              <td>{{row+1}}</td>
+              <td>
+                  <select name="make{{row+1}}" id="select_make{{row+1}}" style="font-size: 15px">
+                    <option value="" disabled selected>Select Make</option>
+    		            {% for make in makes %}
+    			               <option value="{{make}}">{{make}}</option>
+    		            {% endfor%}
+    			        </select>
+              </td>
+              <td>
+                  <select name="model{{row+1}}" id="select_model{{row+1}}" style="font-size: 15px" disabled>
+                    <option value="" disabled selected>Select Model</option>
+                    <!-- {% for model in models %}
+                         <option value="{{model}}">{{model}}</option>
+                    {% endfor%} -->
+                 </select>
+              </td>
+              <td>
+                 <select name="year{{row+1}}" id="select_year{{row+1}}" style="font-size: 15px">
+                   <option value="" disabled selected>Select Year</option>
+                   {% for year in years %}
+                        <option value="{{year}}">{{year}}</option>
+                   {% endfor%}
+                </select>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <input type="submit" value="Calculate!"/>
+
+    </form>
+</body>

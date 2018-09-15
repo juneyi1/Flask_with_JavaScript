@@ -1,0 +1,126 @@
+<!doctype html>
+<title>Rate Engine</title>
+<head>
+  <style>
+  body {
+    margin: 20px;
+  }
+
+  table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 50%;
+      margin-top: auto;
+      margin-left: 50px;
+  }
+
+  td, th {
+      border: 1px solid #dddddd;
+      text-align: right;
+      padding: 8px;
+  }
+
+  tr:nth-child(even) {
+      background-color: #dddddd;
+  }
+  </style>
+</head>
+
+<body>
+  <h1>Shipment Information:</h1>
+  <div style="padding-left: 50px;">
+    {% if dict_cars %}
+      <h1>Car Info:</h1>
+      <!-- <p> Weight: {{dict_cars['weight']}} </p>
+      <p> Length: {{dict_cars['length_numeric_raw']}} </p>
+      <p> Height: {{dict_cars['height_numeric_raw']}} </p> -->
+      <p> Operable: {{dict_cars['op']}} </p>
+      <p> Ship via: {{dict_cars['ship']}} </p>
+      <p> Classic: {{dict_cars['classic']}} </p>
+    {% else %}
+      <!-- <h1>No info found</h1> -->
+    {% endif %}
+
+    {% if fpd %}
+      <p> First pickup date: {{fpd}} </p>
+    {% else %}
+        <h1>No first pickup date found</h1>
+    {% endif %}
+
+    {% if from_zip %}
+      <p> Pickup zipcode: {{from_zip}} </p>
+    {% else %}
+        <h1>No pickup zipcode found</h1>
+    {% endif %}
+
+    {% if to_zip %}
+      <p> Dropoff zipcode: {{to_zip}} </p>
+    {% else %}
+        <h1>No dropoff zipcode found</h1>
+    {% endif %}
+
+    {% if n_cars %}
+      <p> Number of cars to ship: {{n_cars}} </p>
+    {% else %}
+        <h1>No dropoff zipcode found</h1>
+    {% endif %}
+
+    {% if rows %}
+      <table>
+        <tr>
+          {% for column_name in ["Vehicle", "Make", "Model", "Year", "Price"] %}
+            <th>{{column_name}}</th>
+          {% endfor %}
+        </tr>
+        {% for row in rows %}
+          <tr>
+            {% for column in row %}
+              <td>{{column}}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+
+
+    {% if total_price %}
+      <h2> Price: {{total_price}} </h2>
+    {% else %}
+        <h1>No total price found</h1>
+    {% endif %}
+
+    {% if discount %}
+      <h2> Discount: {{discount}} </h2>
+    {% else %}
+        <h1>No discount found</h1>
+    {% endif %}
+
+    {% if price_dis %}
+      <h2> Price after discount: {{price_dis}} </h2>
+    {% else %}
+        <h1>No price after discount found</h1>
+    {% endif %}
+
+    <form method="POST" action="/">
+      <input type="submit" value="New Prediction", style="font-size: 20px; width: 200px; margin-bottom:30px"/>
+    </form>
+
+    {% if (dfshow_ll) and (column_names) %}
+      <h3> Relevant orders:</h3>
+      <table>
+        <tr>
+          {% for column_name in column_names %}
+            <th>{{column_name}}</th>
+          {% endfor %}
+        </tr>
+        {% for row in dfshow_ll %}
+          <tr>
+            {% for column in row %}
+              <td>{{column}}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+  </div>
+</body>
