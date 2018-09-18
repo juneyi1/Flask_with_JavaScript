@@ -146,19 +146,20 @@
 
           var t = document.getElementById("shipmentTable").getElementsByTagName('tbody')[0];
           var rows = t.getElementsByClassName("selection_row");
+          var rows_array = Array.from(rows);
 
           // document.getElementById("printout").innerHTML = rows.length
           // console.log(rows.length);
 
           // var text = "";
-          // rows.forEach(function(row) {
-          //   var make = '#' + row.getElementsByTagName('select')[0].id;
-          //   var model = '#' + row.getElementsByTagName('select')[1].id;
-          //   $(make).on('change', function() {
-          //       updateModel($(make), $(model));
-          //   });
-          //   // text += "<br>The row is " + make + model;
-          // });
+          rows_array.forEach(function(row) {
+            var make = '#' + row.getElementsByTagName('select')[0].id;
+            var model = '#' + row.getElementsByTagName('select')[1].id;
+            $(make).on('change', function() {
+                updateModel($(make), $(model));
+            });
+            // text += "<br>The row is " + make + model;
+          });
 
           // for (var i=0; i < rows.length; i++) {
           //   var make = '#' + rows[i].getElementsByTagName('select')[0].id;
@@ -171,33 +172,33 @@
           // }
           // document.getElementById("printout").innerHTML = text
 
-          $('#select_make1').on('change', function() {
-              updateModel($('#select_make1'), $('#select_model1'));
-          });
-          $('#select_make2').on('change', function() {
-              updateModel($('#select_make2'), $('#select_model2'));
-          });
-          $('#select_make3').on('change', function() {
-              updateModel($('#select_make3'), $('#select_model3'));
-          });
-          $('#select_make4').on('change', function() {
-              updateModel($('#select_make4'), $('#select_model4'));
-          });
-          $('#select_make5').on('change', function() {
-              updateModel($('#select_make5'), $('#select_model5'));
-          });
-          $('#select_make6').on('change', function() {
-              updateModel($('#select_make6'), $('#select_model6'));
-          });
-          $('#select_make7').on('change', function() {
-              updateModel($('#select_make7'), $('#select_model7'));
-          });
-          $('#select_make8').on('change', function() {
-              updateModel($('#select_make8'), $('#select_model8'));
-          });
-          $('#select_make9').on('change', function() {
-              updateModel($('#select_make9'), $('#select_model9'));
-          });
+          // $('#select_make1').on('change', function() {
+          //     updateModel($('#select_make1'), $('#select_model1'));
+          // });
+          // $('#select_make2').on('change', function() {
+          //     updateModel($('#select_make2'), $('#select_model2'));
+          // });
+          // $('#select_make3').on('change', function() {
+          //     updateModel($('#select_make3'), $('#select_model3'));
+          // });
+          // $('#select_make4').on('change', function() {
+          //     updateModel($('#select_make4'), $('#select_model4'));
+          // });
+          // $('#select_make5').on('change', function() {
+          //     updateModel($('#select_make5'), $('#select_model5'));
+          // });
+          // $('#select_make6').on('change', function() {
+          //     updateModel($('#select_make6'), $('#select_model6'));
+          // });
+          // $('#select_make7').on('change', function() {
+          //     updateModel($('#select_make7'), $('#select_model7'));
+          // });
+          // $('#select_make8').on('change', function() {
+          //     updateModel($('#select_make8'), $('#select_model8'));
+          // });
+          // $('#select_make9').on('change', function() {
+          //     updateModel($('#select_make9'), $('#select_model9'));
+          // });
       }
       </script>
 
